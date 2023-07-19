@@ -29,28 +29,39 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var ErrCommandNotFound = fmt.Errorf("command not found")
+
 // rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
-	Use:   "kinano-go",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
+func rootCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "kinano-go",
+		Short: "A brief description of your application",
+		Long: `A longer description that spans multiple lines and likely contains
 examples and usage of using your application. For example:
 
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+		// Uncomment the following line if your bare application
+		// has an action associated with it:
+		// Run: func(cmd *cobra.Command, args []string) { },
+	}
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute(ctx context.Context, outW io.Writer, errW io.Writer, args []string) error {
+	rootCmd := rootCmd()
+	rootCmd.AddCommand(callCmd())
+
 	rootCmd.SetContext(ctx)
 	rootCmd.SetOut(outW)
 	rootCmd.SetErr(errW)
 	rootCmd.SetArgs(args)
+
+	if _, _, err := rootCmd.Find(args); err != nil {
+		return fmt.Errorf("Find: %w: %w", ErrCommandNotFound, err)
+	}
 
 	if err := rootCmd.Execute(); err != nil {
 		return fmt.Errorf("rootCmd: %w", err)
