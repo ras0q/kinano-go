@@ -30,17 +30,14 @@ import (
 	"strings"
 
 	"github.com/ras0q/kinano-go/cmd"
+	"github.com/ras0q/kinano-go/pkg/config"
 	"github.com/ras0q/kinano-go/pkg/traqio"
 	traqwsbot "github.com/traPtitech/traq-ws-bot"
 	"github.com/traPtitech/traq-ws-bot/payload"
 )
 
-var accessToken = os.Getenv("TRAQ_BOT_ACCESS_TOKEN")
-
 func main() {
-	bot, err := traqwsbot.NewBot(&traqwsbot.Options{
-		AccessToken: accessToken,
-	})
+	bot, err := traqwsbot.NewBot(&traqwsbot.Options{AccessToken: config.AccessToken})
 	if err != nil {
 		panic(err)
 	}
