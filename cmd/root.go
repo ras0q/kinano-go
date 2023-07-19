@@ -34,10 +34,13 @@ var ErrCommandNotFound = fmt.Errorf("command not found")
 // rootCmd represents the base command when called without any subcommands
 func rootCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:   "kinano-go",
+		Use:   "@BOT_kinano_v2",
 		Short: "I am kinano v2",
 		Run: func(cmd *cobra.Command, args []string) {
 			cmd.Println("oisu-")
+		},
+		CompletionOptions: cobra.CompletionOptions{
+			DisableDefaultCmd: true,
 		},
 	}
 }
