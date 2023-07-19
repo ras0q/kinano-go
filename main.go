@@ -21,8 +21,52 @@ THE SOFTWARE.
 */
 package main
 
-import "github.com/ras0q/kinano-go/cmd"
+import (
+	"context"
+	"fmt"
+	"log"
+	"os"
+	"strings"
+
+	"github.com/ras0q/kinano-go/cmd"
+	"github.com/ras0q/kinano-go/pkg/traqio"
+	traqwsbot "github.com/traPtitech/traq-ws-bot"
+	"github.com/traPtitech/traq-ws-bot/payload"
+)
+
+var accessToken = os.Getenv("TRAQ_BOT_ACCESS_TOKEN")
 
 func main() {
-	cmd.Execute()
+	bot, err := traqwsbot.NewBot(&traqwsbot.Options{
+		AccessToken: accessToken,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	bot.OnError(func(msg string) {
+		log.Println(fmt.Errorf("bot error: %s", msg))
+	})
+
+	bot.OnMessageCreated(func(p *payload.MessageCreated) {
+		var (
+			ctx  = context.Background()
+			w    = traqio.NewWriter(bot.API(), p.Message.ChannelID, true)
+			args = strings.Fields(p.Message.PlainText)
+		)
+
+		if e := p.Message.Embedded; len(e) > 0 {
+			if e[0].Raw == args[0] {
+				args = args[1:]
+			}
+		}
+
+		if err := cmd.Execute(ctx, w, w, args); err != nil {
+			log.Println(fmt.Errorf("cmd.Execute: %w", err))
+		}
+	})
+
+	if err := bot.Start(); err != nil {
+		panic(err)
+	}
 }
