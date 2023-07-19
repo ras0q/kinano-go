@@ -39,3 +39,19 @@ go run main.go
 ```bash
 go run dev/main.go
 ```
+
+## Add a command
+
+```bash
+go run github.com/spf13/cobra-cli@latest add {{CMDNAME}} --author {{YOURNAME}} --license mit
+```
+
+Then, edit `cmd/{{CMDNAME}}.go`.
+
+## Add a custom function (called by `call` command)
+
+```bash
+go run github.com/spf13/cobra-cli@latest add {{FUNCNAME}} --author {{YOURNAME}} --license mit
+```
+
+Then, move `cmd/{{FUNCNAME}}.go` to `cmd/callevent/{{FUNCNAME}}.go` and edit it.
