@@ -22,48 +22,16 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"context"
-	"fmt"
-	"io"
-
 	"github.com/spf13/cobra"
 )
 
-var ErrCommandNotFound = fmt.Errorf("command not found")
-
-// rootCmd represents the base command when called without any subcommands
-func rootCmd() *cobra.Command {
+// repoCmd represents the repo command
+func repoCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:   "@BOT_kinano_v2",
-		Short: "I am kinano v2",
+		Use:   "repo",
+		Short: "show repository information",
 		Run: func(cmd *cobra.Command, args []string) {
-			cmd.Println("oisu-")
-		},
-		CompletionOptions: cobra.CompletionOptions{
-			DisableDefaultCmd: true,
+			cmd.Println("REPO: https://github.com/ras0q/kinano-go")
 		},
 	}
-}
-
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute(ctx context.Context, outW io.Writer, errW io.Writer, args []string) error {
-	rootCmd := rootCmd()
-	rootCmd.AddCommand(callCmd())
-	rootCmd.AddCommand(repoCmd())
-
-	rootCmd.SetContext(ctx)
-	rootCmd.SetOut(outW)
-	rootCmd.SetErr(errW)
-	rootCmd.SetArgs(args)
-
-	if _, _, err := rootCmd.Find(args); err != nil {
-		return fmt.Errorf("Find: %w: %w", ErrCommandNotFound, err)
-	}
-
-	if err := rootCmd.Execute(); err != nil {
-		return fmt.Errorf("rootCmd: %w", err)
-	}
-
-	return nil
 }
