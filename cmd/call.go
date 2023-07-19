@@ -30,7 +30,7 @@ import (
 func callCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "call",
-		Short: "call custom functions",
+		Short: "call custom functions (PR welcome!!!!!!!!!!!!!!!!!))",
 	}
 
 	cmd.AddCommand(callevent.GetMyUserTagsCmd())
