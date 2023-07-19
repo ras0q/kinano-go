@@ -6,6 +6,10 @@ import (
 	traqoauth2 "github.com/ras0q/traq-oauth2"
 )
 
+type ContextKey string
+
+const PayloadKey ContextKey = "payload"
+
 var (
 	AccessToken = os.Getenv("TRAQ_BOT_ACCESS_TOKEN")
 

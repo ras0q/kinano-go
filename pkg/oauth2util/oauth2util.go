@@ -7,16 +7,23 @@ import (
 	"net/http"
 
 	"github.com/ras0q/kinano-go/pkg/cache"
+	"github.com/ras0q/kinano-go/pkg/config"
 	traqoauth2 "github.com/ras0q/traq-oauth2"
 	"github.com/spf13/cobra"
 	"github.com/traPtitech/go-traq"
+	"github.com/traPtitech/traq-ws-bot/payload"
 	"golang.org/x/oauth2"
 )
 
-const tokenKey = "token"
+const tokenKey = "token-"
 
 func RetrieveToken(ctx context.Context, cmd *cobra.Command, conf *traqoauth2.Config) (*oauth2.Token, error) {
-	tok, ok := cache.Default().Get(tokenKey)
+	p, ok := ctx.Value(config.PayloadKey).(payload.MessageCreated)
+	if !ok {
+		return nil, fmt.Errorf("invalid payload type")
+	}
+
+	tok, ok, setToken := cache.Get[*oauth2.Token](tokenKey + p.Message.User.ID)
 	if !ok || tok == nil {
 		codeVerifier, authURL, err := conf.AuthorizeWithPKCE(traqoauth2.CodeChallengeS256, "state")
 		if err != nil {
@@ -35,12 +42,8 @@ func RetrieveToken(ctx context.Context, cmd *cobra.Command, conf *traqoauth2.Con
 			return nil, fmt.Errorf("callback: %w", err)
 		}
 
-		cache.Default().SetDefault(tokenKey, tok)
+		setToken(tok)
 
-		return tok, nil
-	}
-
-	if tok, ok := tok.(*oauth2.Token); ok {
 		return tok, nil
 	}
 

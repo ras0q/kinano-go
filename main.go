@@ -52,7 +52,7 @@ func main() {
 		}
 
 		var (
-			ctx  = context.Background()
+			ctx  = context.WithValue(context.Background(), config.PayloadKey, p)
 			w    = traqio.NewWriter(bot.API(), p.Message.ChannelID, true)
 			args = strings.Fields(p.Message.PlainText)
 		)
