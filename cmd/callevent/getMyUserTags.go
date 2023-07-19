@@ -19,21 +19,48 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package cmd
+package callevent
 
 import (
-	"github.com/ras0q/kinano-go/cmd/callevent"
+	"fmt"
+	"net/http"
+	"strings"
+
+	"github.com/ras0q/kinano-go/pkg/config"
+	"github.com/ras0q/kinano-go/pkg/oauth2util"
 	"github.com/spf13/cobra"
 )
 
-// callCmd represents the call command
-func callCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "call",
-		Short: "call custom functions",
+// getMyUserTagsCmd represents the getMyUserTags command
+func GetMyUserTagsCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "getMyUserTags",
+		Short: "get my tags",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
+			conf := config.BotOAuth2Config
+
+			tok, err := oauth2util.RetrieveToken(ctx, cmd, conf)
+			if err != nil {
+				return fmt.Errorf("get token: %w", err)
+			}
+
+			traqClient := oauth2util.NewTRAQClient(ctx, conf, tok)
+			tags, res, err := traqClient.MeApi.GetMyUserTags(ctx).Execute()
+			if err != nil {
+				return fmt.Errorf("get my tags: %w", err)
+			}
+			if res.StatusCode != http.StatusOK {
+				return fmt.Errorf("get my tags: %d, %s", res.StatusCode, res.Status)
+			}
+
+			tagContents := make([]string, len(tags))
+			for i, tag := range tags {
+				tagContents[i] = tag.Tag
+			}
+			cmd.Println(strings.Join(tagContents, "\n"))
+
+			return nil
+		},
 	}
-
-	cmd.AddCommand(callevent.GetMyUserTagsCmd())
-
-	return cmd
 }

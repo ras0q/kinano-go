@@ -3,9 +3,11 @@ module github.com/ras0q/kinano-go
 go 1.20
 
 require (
+	github.com/ras0q/traq-oauth2 v0.1.1
 	github.com/spf13/cobra v1.7.0
 	github.com/traPtitech/go-traq v0.0.0-20220426061605-adc15dcfc6d0
 	github.com/traPtitech/traq-ws-bot v1.1.2
+	golang.org/x/oauth2 v0.7.0
 )
 
 require (
@@ -16,7 +18,6 @@ require (
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	golang.org/x/net v0.10.0 // indirect
-	golang.org/x/oauth2 v0.7.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 )
