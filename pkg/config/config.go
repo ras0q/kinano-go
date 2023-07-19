@@ -8,7 +8,10 @@ import (
 
 type ContextKey string
 
-const PayloadKey ContextKey = "payload"
+const (
+	BotKey     ContextKey = "bot"
+	PayloadKey ContextKey = "payload"
+)
 
 var (
 	AccessToken = os.Getenv("TRAQ_BOT_ACCESS_TOKEN")

@@ -50,6 +50,7 @@ func rootCmd() *cobra.Command {
 func Execute(ctx context.Context, outW io.Writer, errW io.Writer, args []string) error {
 	rootCmd := rootCmd()
 	rootCmd.AddCommand(callCmd())
+	rootCmd.AddCommand(metamorphoseCmd())
 	rootCmd.AddCommand(repoCmd())
 
 	rootCmd.SetContext(ctx)
