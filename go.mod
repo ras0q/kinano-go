@@ -3,6 +3,7 @@ module github.com/ras0q/kinano-go
 go 1.20
 
 require (
+	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/ras0q/traq-oauth2 v0.1.1
 	github.com/spf13/cobra v1.7.0
 	github.com/traPtitech/go-traq v0.0.0-20220426061605-adc15dcfc6d0
