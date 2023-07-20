@@ -46,7 +46,18 @@ func main() {
 		log.Println(fmt.Errorf("bot error: %s", msg))
 	})
 
-	bot.OnMessageCreated(func(p *payload.MessageCreated) {
+	bot.OnMessageCreated(onMessageCreated(bot))
+	bot.OnDirectMessageCreated(func(p *payload.DirectMessageCreated) {
+		onMessageCreated(bot)((*payload.MessageCreated)(p))
+	})
+
+	if err := bot.Start(); err != nil {
+		panic(err)
+	}
+}
+
+func onMessageCreated(bot *traqwsbot.Bot) func(p *payload.MessageCreated) {
+	return func(p *payload.MessageCreated) {
 		if p.Message.User.Bot {
 			return
 		}
@@ -74,9 +85,5 @@ func main() {
 				log.Println(fmt.Errorf("cmd.Execute: %w", err))
 			}
 		}
-	})
-
-	if err := bot.Start(); err != nil {
-		panic(err)
 	}
 }
