@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/ras0q/kinano-go/pkg/config"
 	"github.com/spf13/cobra"
 	"github.com/traPtitech/go-traq"
 	traqwsbot "github.com/traPtitech/traq-ws-bot"
@@ -39,12 +40,12 @@ func metamorphoseCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
-			bot, ok := ctx.Value("bot").(*traqwsbot.Bot)
+			bot, ok := ctx.Value(config.BotKey).(*traqwsbot.Bot)
 			if !ok {
 				return fmt.Errorf("failed to get bot from context")
 			}
 
-			p, ok := ctx.Value("payload").(*payload.MessageCreated)
+			p, ok := ctx.Value(config.PayloadKey).(*payload.MessageCreated)
 			if !ok {
 				return fmt.Errorf("failed to get payload from context")
 			}
@@ -53,7 +54,7 @@ func metamorphoseCmd() *cobra.Command {
 				if err != nil {
 					return fmt.Errorf("%s: %w", msg, err)
 				}
-				if res.StatusCode != http.StatusOK {
+				if res.StatusCode/100 != 2 {
 					return fmt.Errorf("%s: %d %s", msg, res.StatusCode, res.Status)
 				}
 
@@ -69,14 +70,13 @@ func metamorphoseCmd() *cobra.Command {
 			}
 			defer (*f).Close()
 
-			res, err = bot.API().MeApi.ChangeMyIcon(ctx).File(*f).Execute()
+			res, err = bot.API().MeApi.ChangeMyIcon(ctx).File(f).Execute()
 			if err := handleError(err, res, "change my icon"); err != nil {
 				return err
 			}
 
-			displayName := p.Message.User.DisplayName + "きなの"
 			res, err = bot.API().MeApi.EditMe(ctx).PatchMeRequest(traq.PatchMeRequest{
-				DisplayName: &displayName,
+				DisplayName: &p.Message.User.DisplayName,
 			}).Execute()
 			//nolint: revive
 			if err := handleError(err, res, "edit me"); err != nil {
